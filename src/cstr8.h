@@ -51,7 +51,6 @@ typedef struct {
  */
 typedef struct {
     String value;
-    StringArray items;
 } StringOk;
 
 
@@ -68,6 +67,29 @@ typedef struct {
         StringErr err;
     } as;
 } StringResult;
+
+
+/**
+ * @brief Represents a successful result from a string operation.
+ */
+typedef struct {
+    StringArray *arr;
+} StringArrayOk;
+
+
+/**
+ * @brief Represents the result of a string array operation.
+ * 
+ * If is_ok is true, use as.ok. Otherwise, use as.err.
+ */
+typedef struct {
+    int is_ok;
+
+    union {
+        StringArrayOk ok;
+        StringErr err;
+    } as;
+} StringArrayResult;
 
 
 /**
@@ -101,6 +123,12 @@ extern void string_free(String s);
 
 
 /**
+ * @brief Frees a StringArray instance.
+ */
+extern void string_array_result_free(StringArrayResult result);
+
+
+/**
  * @brief Returns a substring from the given string starting at `start` with length `len`.
  * 
  * Returns a StringResult which must be checked for errors.
@@ -115,13 +143,13 @@ extern StringResult string_substring(int start, int len, String s);
  * Returns a StringResult which must be checked for errors.
  * If successful, the result's items must be freed with string_array_free().
  */
-extern StringResult string_split(char c, String s);
+extern StringArrayResult string_split(char c, String s);
 
 
 /**
  * @brief Frees the result of a string operation (both String and StringArray, if present).
  */
-extern void string_free_result(StringResult result);
+extern void string_result_free(StringResult result);
 
 
 /**

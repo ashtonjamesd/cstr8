@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stdlib.h>
 
 #include "cstr8.h"
@@ -23,10 +22,17 @@ static int _len(char *str) {
     return t;
 }
 
-static StringResult ok(char *value) {
+static StringResult string_ok(char *value) {
     StringResult result;
     result.is_ok = 1;
     result.as.ok.value = string_new(value);
+
+    return result;
+}
+
+static StringArrayResult string_array_ok(String *items, int count) {
+    StringArrayResult result;
+    result.as.ok.arr = string_array_new(items, count);
 
     return result;
 }
@@ -43,29 +49,29 @@ int string_len(String str) {
     return _len(str._value);
 }
 
-char *string_str(String s) {
-    return s._value;
+char *string_str(String str) {
+    return str._value;
 }
 
-char string_char_at(int i, String s) {
-    if (string_len(s) <= i) return '\0';
-    return s._value[i];
+char string_char_at(int i, String str) {
+    if (string_len(str) <= i) return '\0';
+    return str._value[i];
 }
 
-char string_first(String s) {
-    return string_char_at(0, s);
+char string_first(String str) {
+    return string_char_at(0, str);
 }
 
-char string_last(String s) {
-    return string_char_at(string_len(s) - 1, s);
+char string_last(String str) {
+    return string_char_at(string_len(str) - 1, str);
 }
 
-static void _set_char_at(int i, char c, String s) {
-    s._value[i] = c;
+static void _set_char_at(int i, char c, String str) {
+    str._value[i] = c;
 }
 
-String string_to_lower(String s) {
-    String str = string_from(s);
+String string_to_lower(String str) {
+    String _str = string_from(str);
 
     StringIterator iter = string_iterator_new(&str);
     int i = 0;
@@ -73,17 +79,17 @@ String string_to_lower(String s) {
         char c = string_iterator_next(&iter);
         
         if (c >= 'A' && c <= 'Z') {
-            str._value[i++] = c + ('a' - 'A');
+            _str._value[i++] = c + ('a' - 'A');
         } else {
-            str._value[i++] = c;
+            _str._value[i++] = c;
         }
     }
 
-    return str;
+    return _str;
 }
 
-String string_to_upper(String s) {
-    String str = string_from(s);
+String string_to_upper(String str) {
+    String _str = string_from(str);
 
     StringIterator iter = string_iterator_new(&str);
     int i = 0;
@@ -91,17 +97,17 @@ String string_to_upper(String s) {
         char c = string_iterator_next(&iter);
 
         if (c >= 'a' && c <= 'z') {
-            str._value[i++] = c + ('A' - 'a');
+            _str._value[i++] = c + ('A' - 'a');
         } else {
-            str._value[i++] = c;
+            _str._value[i++] = c;
         }
     }
 
-    return str;
+    return _str;
 }
 
-int string_index_of(char c, String s) {
-    StringIterator iter = string_iterator_new(&s);
+int string_index_of(char c, String str) {
+    StringIterator iter = string_iterator_new(&str);
 
     int i = 0;
     while (string_iterator_has_next(&iter)) {
@@ -114,17 +120,17 @@ int string_index_of(char c, String s) {
     return -1;
 }
 
-int string_starts_with(char c, String s) {
-    if (string_len(s) == 0) return 0;
-    return string_first(s) == c;
+int string_starts_with(char c, String str) {
+    if (string_len(str) == 0) return 0;
+    return string_first(str) == c;
 }
 
-int string_ends_with(char c, String s) {
-    if (string_len(s) == 0) return 0;
-    return string_last(s) == c;
+int string_ends_with(char c, String str) {
+    if (string_len(str) == 0) return 0;
+    return string_last(str) == c;
 }
 
-StringResult string_substring(int start, int len, String s) {
+StringResult string_substring(int start, int len, String str) {
     if (len < 0) {
         return err(LENGTH_OF_SUBSTRING_LESS_THAN_0);
     }
@@ -132,27 +138,58 @@ StringResult string_substring(int start, int len, String s) {
     char *_str = (char *)malloc(len + 1);
 
     for (int i = start; i < len + start; i++) {
-        if (i >= _len(s._value)) {
+        if (i >= string_len(str)) {
             return err(LENGTH_OF_SUBSTRING_EXCEEDS_STRING_ERR);
         }
 
-        _str[i - start] = s._value[i];
+        _str[i - start] = str._value[i];
     }
     _str[len] = '\0';
 
-    StringResult result = ok(_str);
+    StringResult result = string_ok(_str);
     free(_str);
 
     return result;
 }
 
-StringResult string_split(char c, String s) {
-    return ok("");
+StringArrayResult string_split(char c, String str) {
+    StringArray *parts = string_array_empty();
+    StringIterator iter = string_iterator_new(&str);
+
+    String current = string_empty();
+
+    while (string_iterator_has_next(&iter)) {
+        char _c = string_iterator_next(&iter);
+
+        if (_c == c) {
+            string_array_add(current, parts);
+            current = string_empty();
+        } else {
+            int len = string_len(current);
+            current._value = realloc(current._value, len + 2);
+            current._value[len] = _c;
+            current._value[len + 1] = '\0';
+        }
+    }
+
+    string_array_add(current, parts);
+
+    StringArrayResult result;
+    result.is_ok = 1;
+    result.as.ok.arr = parts;
+
+    return result;
 }
 
-void string_free_result(StringResult result) {
+void string_result_free(StringResult result) {
     if (result.is_ok) {
         free(result.as.ok.value._value);
+    }
+}
+
+void string_array_result_free(StringArrayResult result) {
+    if (result.is_ok) {
+        string_array_free(result.as.ok.arr);
     }
 }
 
@@ -169,6 +206,7 @@ StringArray *string_array_from(StringArray *arr) {
 StringArray *string_array_new(String *strs, int count) {
     StringArray *_arr = string_array_empty();
     _arr->items = malloc(sizeof(String) * count);
+    _arr->capacity = count;
     
     for (int i = 0; i < count; i++) {
         _arr->items[i] = strs[i];
@@ -186,13 +224,13 @@ StringArray *string_array_empty() {
     return _array;
 }
 
-void string_array_add(String s, StringArray *arr) {
+void string_array_add(String str, StringArray *arr) {
     if (arr->count >= arr->capacity) {
         arr->capacity *= 2;
         arr->items = realloc(arr->items, sizeof(String) * arr->capacity);
     }
 
-    arr->items[arr->count++] = s;
+    arr->items[arr->count++] = str;
 }
 
 void string_array_free(StringArray *arr) {
@@ -205,16 +243,16 @@ void string_array_free(StringArray *arr) {
     free(arr);
 }
 
-int string_equals(String s1, String s2) {
-    if (string_len(s1) != string_len(s2)) {
+int string_equals(String str1, String str2) {
+    if (string_len(str1) != string_len(str2)) {
         return 0;
     }
 
-    StringIterator it1 = string_iterator_new(&s1);
-    StringIterator it2 = string_iterator_new(&s2);
+    StringIterator iter1 = string_iterator_new(&str1);
+    StringIterator iter2 = string_iterator_new(&str2);
 
-    while (string_iterator_has_next(&it1) && string_iterator_has_next(&it2)) {
-        if (string_iterator_next(&it1) != string_iterator_next(&it2)) {
+    while (string_iterator_has_next(&iter1) && string_iterator_has_next(&iter2)) {
+        if (string_iterator_next(&iter1) != string_iterator_next(&iter2)) {
             return 0;
         }
     }
@@ -272,9 +310,9 @@ void string_free(String str) {
     free(str._value);
 }
 
-StringIterator string_iterator_new(String *s) {
+StringIterator string_iterator_new(String *str) {
     StringIterator iterator;
-    iterator.string = s;
+    iterator.string = str;
     iterator.index = 0;
 
     return iterator;

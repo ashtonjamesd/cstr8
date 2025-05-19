@@ -36,7 +36,7 @@ void test_string_substring() {
     assert_string_eq(string_str(result.as.ok.value), "Hello");
 
     string_free(str);
-    string_free_result(result);
+    string_result_free(result);
 }
 
 void test_string_substring_empty() {
@@ -47,7 +47,7 @@ void test_string_substring_empty() {
     assert_string_eq(string_str(result.as.ok.value), "");
 
     string_free(str);
-    string_free_result(result);
+    string_result_free(result);
 }
 
 void test_string_len() {
@@ -174,8 +174,20 @@ void test_string_index_of() {
     string_free(str);
 }
 
-void test_string_iterator() {
-    
+void test_string_split() {
+    String str = string_new("Hello, World!");
+    StringArrayResult result = string_split(' ', str);
+
+    StringArray *arr = result.as.ok.arr;
+
+    assert_true(result.is_ok);
+    assert_true(result.as.ok.arr->count == 2);
+    assert_string_eq(arr->items[0]._value, "Hello,");
+    assert_string_eq(arr->items[1]._value, "World!");
+
+    string_array_result_free(result);
+
+    string_free(str);
 }
 
 void test_string_array() {
@@ -231,6 +243,7 @@ int main(void) {
     test_string_array_from();
     test_string_contains();
     test_string_index_of();
-    
+    test_string_split();
+
     return test_finish();
 }
