@@ -14,7 +14,7 @@ static char *err_str(StringErrCode code) {
     }
 }
 
-static int _internal_len(char *str) {
+static int _len(char *str) {
     int t = 0;
     for (int i = 0; str[i]; i++) {
         t++;
@@ -40,12 +40,24 @@ static StringResult err(StringErrCode code) {
 }
 
 int string_len(String str) {
-    return _internal_len(str._value);
+    return _len(str._value);
+}
+
+char *string_str(String s) {
+    return s._value;
 }
 
 char string_char_at(int i, String s) {
     if (string_len(s) <= i) return '\0';
     return s._value[i];
+}
+
+char string_first(String s) {
+    return string_char_at(0, s);
+}
+
+char string_last(String s) {
+    return string_char_at(string_len(s) - 1, s);
 }
 
 String string_to_lower(String s) {
@@ -82,12 +94,12 @@ String string_to_upper(String s) {
 
 int string_starts_with(char c, String s) {
     if (string_len(s) == 0) return 0;
-    return string_char_at(0, s) == c;
+    return string_first(s) == c;
 }
 
 int string_ends_with(char c, String s) {
     if (string_len(s) == 0) return 0;
-    return string_char_at(string_len(s) - 1, s) == c;
+    return string_last(s) == c;
 }
 
 StringResult string_substring(int start, int len, String s) {
@@ -95,22 +107,80 @@ StringResult string_substring(int start, int len, String s) {
         return err(LENGTH_OF_SUBSTRING_LESS_THAN_0);
     }
 
-    char *str = malloc(sizeof(len - start));
+    char *_str = (char *)malloc(len + 1);
 
     for (int i = start; i < len + start; i++) {
-        if (i >= _internal_len(s._value)) {
+        if (i >= _len(s._value)) {
             return err(LENGTH_OF_SUBSTRING_EXCEEDS_STRING_ERR);
         }
 
-        str[i - start] = s._value[i];
+        _str[i - start] = s._value[i];
     }
-    str[len] = '\0';
+    _str[len] = '\0';
 
-    return ok(str);
+    StringResult result = ok(_str);
+    free(_str);
+
+    return result;
 }
 
 StringResult string_split(char c, String s) {
     return ok("");
+}
+
+void string_free_result(StringResult result) {
+    if (result.is_ok) {
+        free(result.as.ok.value._value);
+    }
+}
+
+StringArray *string_array_from(StringArray *arr) {
+    StringArray *_arr = string_array_empty();
+
+    for (int i = 0; i < arr->count; i++) {
+        string_array_add(string_from(arr->items[i]), _arr);
+    }
+
+    return _arr;
+}
+
+StringArray *string_array_new(String *strs, int count) {
+    StringArray *_arr = string_array_empty();
+    _arr->items = malloc(sizeof(String) * count);
+    
+    for (int i = 0; i < count; i++) {
+        _arr->items[i] = strs[i];
+    }
+
+    return _arr;
+}
+
+StringArray *string_array_empty() {
+    StringArray *_array = malloc(sizeof(StringArray));
+    _array->capacity = 1;
+    _array->items = malloc(sizeof(String) * _array->capacity);
+    _array->count = 0;
+
+    return _array;
+}
+
+void string_array_add(String s, StringArray *arr) {
+    if (arr->count >= arr->capacity) {
+        arr->capacity *= 2;
+        arr->items = realloc(arr->items, sizeof(String) * arr->capacity);
+    }
+
+    arr->items[arr->count++] = s;
+}
+
+void string_array_free(StringArray *arr) {
+    if (!arr) return;
+    for (int i = 0; i < arr->count; i++) {
+        free(arr->items[i]._value);
+    }
+
+    free(arr->items);
+    free(arr);
 }
 
 int string_equals(String s1, String s2) {
@@ -127,13 +197,19 @@ int string_equals(String s1, String s2) {
     return 1;
 }
 
-int string_is_null_or_empty(String str) {
-    return !str._value || string_equals(str, string_empty());
+int string_is_empty(String str) {
+    String empty = string_empty();
+    
+    int result = !str._value || string_equals(empty, str);
+    string_free(empty);
+
+    return result;
 }
 
 String string_empty() {
     String _str;
-    _str._value = "";
+    _str._value = malloc(1);
+    _str._value[0] = '\0';
 
     return _str;
 }
@@ -158,16 +234,4 @@ String string_from(String str) {
 void string_free(String str) {
     if (!str._value) return;
     free(str._value);
-   
-    str._value[0] = '\0';
-}
-
-int main() {
-    String str = string_new("Hello, World!");
-    String lowered = string_to_upper(str);
-
-    printf("%s", lowered);
-
-
-    return 0;
 }
