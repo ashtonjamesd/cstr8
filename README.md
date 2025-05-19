@@ -1,6 +1,6 @@
 # cstr8
 
-Cstr8 (see-straight) is (another) modern string utility library, designed for safety readability.
+Cstr8 (see-straight) is (another) modern string utility library, designed for safety and readability.
 
 <br/>
 
@@ -16,8 +16,13 @@ cd cstr8
 
 ## Usage
 
-```
+```c
+// allocate a new string
 String str = string_new("Hello, World!");
+
+  // ... string stuff
+
+// free the string when finished
 string_free(str);
 
 

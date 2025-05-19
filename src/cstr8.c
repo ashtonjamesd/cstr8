@@ -60,16 +60,22 @@ char string_last(String s) {
     return string_char_at(string_len(s) - 1, s);
 }
 
+static void _set_char_at(int i, char c, String s) {
+    s._value[i] = c;
+}
+
 String string_to_lower(String s) {
     String str = string_from(s);
 
-    for (int i = 0; i < string_len(s); i++) {
-        char c = string_char_at(i, s);
-
+    StringIterator iter = string_iterator_new(&str);
+    int i = 0;
+    while (string_iterator_has_next(&iter)) {
+        char c = string_iterator_next(&iter);
+        
         if (c >= 'A' && c <= 'Z') {
-            str._value[i] = c + ('a' - 'A');
+            str._value[i++] = c + ('a' - 'A');
         } else {
-            str._value[i] = c;
+            str._value[i++] = c;
         }
     }
 
@@ -79,17 +85,33 @@ String string_to_lower(String s) {
 String string_to_upper(String s) {
     String str = string_from(s);
 
-    for (int i = 0; i < string_len(s); i++) {
-        char c = string_char_at(i, s);
+    StringIterator iter = string_iterator_new(&str);
+    int i = 0;
+    while (string_iterator_has_next(&iter)) {
+        char c = string_iterator_next(&iter);
 
         if (c >= 'a' && c <= 'z') {
-            str._value[i] = c + ('A' - 'a');
+            str._value[i++] = c + ('A' - 'a');
         } else {
-            str._value[i] = c;
+            str._value[i++] = c;
         }
     }
 
     return str;
+}
+
+int string_index_of(char c, String s) {
+    StringIterator iter = string_iterator_new(&s);
+
+    int i = 0;
+    while (string_iterator_has_next(&iter)) {
+        if (string_iterator_next(&iter) == c) {
+            return i;
+        }
+        i++;
+    }
+
+    return -1;
 }
 
 int string_starts_with(char c, String s) {
@@ -188,8 +210,11 @@ int string_equals(String s1, String s2) {
         return 0;
     }
 
-    for (int i = 0; i < string_len(s1); i++) {
-        if (s1._value[i] != s2._value[i]) {
+    StringIterator it1 = string_iterator_new(&s1);
+    StringIterator it2 = string_iterator_new(&s2);
+
+    while (string_iterator_has_next(&it1) && string_iterator_has_next(&it2)) {
+        if (string_iterator_next(&it1) != string_iterator_next(&it2)) {
             return 0;
         }
     }
@@ -204,6 +229,17 @@ int string_is_empty(String str) {
     string_free(empty);
 
     return result;
+}
+
+int string_contains(char c, String s) {
+    StringIterator iter = string_iterator_new(&s);
+    while (string_iterator_has_next(&iter)) {
+        if (string_iterator_next(&iter) == c) {
+            return 1;
+        }
+    }
+
+    return 0;
 }
 
 String string_empty() {
@@ -234,4 +270,20 @@ String string_from(String str) {
 void string_free(String str) {
     if (!str._value) return;
     free(str._value);
+}
+
+StringIterator string_iterator_new(String *s) {
+    StringIterator iterator;
+    iterator.string = s;
+    iterator.index = 0;
+
+    return iterator;
+}
+
+int string_iterator_has_next(StringIterator *iter) {
+    return iter->index < string_len(*iter->string);
+}
+
+char string_iterator_next(StringIterator *iter) {
+    return string_str(*iter->string)[iter->index++];
 }

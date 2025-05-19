@@ -1,30 +1,65 @@
 #ifndef CSTRING_H
 #define CSTRING_H
 
+
+/**
+ * @brief Represents a dynamically allocated string.
+ */
 typedef struct {
     char *_value;
 } String;
 
+
+/**
+ * @brief Represents a dynamic array of String instances.
+ */
 typedef struct {
     String *items;
     int count;
     int capacity;
 } StringArray;
 
+
+/**
+ * @brief Represents an iterator for a cstr8 String.
+ */
+typedef struct {
+    String *string;
+    int index;
+} StringIterator;
+
+
+/**
+ * @brief Error codes used in string operations.
+ */
 typedef enum {
-    LENGTH_OF_SUBSTRING_EXCEEDS_STRING_ERR,
-    LENGTH_OF_SUBSTRING_LESS_THAN_0,
+    LENGTH_OF_SUBSTRING_EXCEEDS_STRING_ERR,  /**< Substring length goes beyond string bounds. */
+    LENGTH_OF_SUBSTRING_LESS_THAN_0,         /**< Substring length is negative. */
 } StringErrCode;
 
+
+/**
+ * @brief Represents an error returned from a string operation.
+ */
 typedef struct {
     StringErrCode code;
 } StringErr;
 
+
+/**
+ * @brief Represents a successful result from a string operation.
+ */
 typedef struct {
     String value;
     StringArray items;
 } StringOk;
 
+
+/**
+ * @brief Represents the result of a string operation.
+ * 
+ * If is_ok is true, use as.ok. Otherwise, use as.err.
+ */
 typedef struct {
     int is_ok;
 
@@ -34,35 +69,216 @@ typedef struct {
     } as;
 } StringResult;
 
-extern String       string_new(const char *val);
-extern String       string_empty();
-extern String       string_from(String s);
-extern void         string_free(String s);
 
+/**
+ * @brief Creates a new cstr8 string instance from a null-terminated C string.
+ * 
+ * The returned string must be freed with string_free().
+ */
+extern String string_new(const char *val);
+
+
+/**
+ * @brief Creates a new empty cstr8 string.
+ * 
+ * The returned string must be freed with string_free().
+ */
+extern String string_empty();
+
+
+/**
+ * @brief Creates a new cstr8 string by copying another String instance.
+ * 
+ * The returned string must be freed with string_free().
+ */
+extern String string_from(String s);
+
+
+/**
+ * @brief Frees a cstr8 string instance.
+ */
+extern void string_free(String s);
+
+
+/**
+ * @brief Returns a substring from the given string starting at `start` with length `len`.
+ * 
+ * Returns a StringResult which must be checked for errors.
+ * If successful, the result's value must be freed with string_free().
+ */
 extern StringResult string_substring(int start, int len, String s);
+
+
+/**
+ * @brief Splits the given string into substrings by the specified delimiter character.
+ * 
+ * Returns a StringResult which must be checked for errors.
+ * If successful, the result's items must be freed with string_array_free().
+ */
 extern StringResult string_split(char c, String s);
 
-extern void         string_free_result(StringResult result);
 
+/**
+ * @brief Frees the result of a string operation (both String and StringArray, if present).
+ */
+extern void string_free_result(StringResult result);
+
+
+/**
+ * @brief Creates a new StringArray from an array of Strings.
+ * 
+ * The returned array must be freed with string_array_free().
+ */
 extern StringArray *string_array_new(String *strs, int count);
+
+
+/**
+ * @brief Creates an empty StringArray.
+ * 
+ * The returned array must be freed with string_array_free().
+ */
 extern StringArray *string_array_empty();
+
+
+/**
+ * @brief Creates a new StringArray by copying an existing one.
+ * 
+ * The returned array must be freed with string_array_free().
+ */
 extern StringArray *string_array_from(StringArray *arr);
-extern void         string_array_free(StringArray *arr);
 
-extern void         string_array_add(String s, StringArray *arr);
 
-extern int          string_len(String s);
-extern char*        string_str(String s);
+/**
+ * @brief Frees a StringArray and all of its contained Strings.
+ */
+extern void string_array_free(StringArray *arr);
 
-extern int          string_equals(String s1, String s2);
-extern int          string_starts_with(char c, String s);
-extern int          string_ends_with(char c, String s);
-extern int          string_is_empty(String s);
 
-extern char         string_char_at(int i, String s);
-extern char         string_first(String s);
-extern char         string_last(String s);
-extern String       string_to_lower(String s);
-extern String       string_to_upper(String s);
+/**
+ * @brief Adds a String to a StringArray.
+ * 
+ * The array will expand as needed.
+ */
+extern void string_array_add(String s, StringArray *arr);
+
+
+/**
+ * @brief Returns the length of the string (number of characters).
+ */
+extern int string_len(String s);
+
+
+/**
+ * @brief Returns the underlying C string (char pointer).
+ * 
+ * Do not modify or free this pointer directly.
+ */
+extern char* string_str(String s);
+
+
+/**
+ * @brief Compares two strings for equality.
+ * 
+ * @return 1 if equal, 0 otherwise.
+ */
+extern int string_equals(String s1, String s2);
+
+
+/**
+ * @brief Checks if the string starts with the specified character.
+ * 
+ * @return 1 if true, 0 otherwise.
+ */
+extern int string_starts_with(char c, String s);
+
+
+/**
+ * @brief Checks if the string ends with the specified character.
+ * 
+ * @return 1 if true, 0 otherwise.
+ */
+extern int string_ends_with(char c, String s);
+
+
+/**
+ * @brief Checks if the string is empty.
+ * 
+ * @return 1 if empty, 0 otherwise.
+ */
+extern int string_is_empty(String s);
+
+
+/**
+ * @brief Checks if the string contains the specified character.
+ * 
+ * @return 1 if found, 0 otherwise.
+ */
+extern int string_contains(char c, String s);
+
+
+/**
+ * @brief Returns the character at the specified index in the string.
+ * 
+ * No bounds checking is performed.
+ */
+extern char string_char_at(int i, String s);
+
+
+/**
+ * @brief Returns the first character of the string.
+ * 
+ * No check for empty string is done.
+ */
+extern char string_first(String s);
+
+
+/**
+ * @brief Returns the last character of the string.
+ * 
+ * No check for empty string is done.
+ */
+extern char string_last(String s);
+
+
+/**
+ * @brief Converts the string to lowercase.
+ * 
+ * The returned string must be freed with string_free().
+ */
+extern String string_to_lower(String s);
+
+
+/**
+ * @brief Converts the string to uppercase.
+ * 
+ * The returned string must be freed with string_free().
+ */
+extern String string_to_upper(String s);
+
+
+/**
+ * @brief Returns the index of the first occurrence of 'c'
+ * 
+ * Returns -1 if 'c' is not contained in 's'
+ */
+extern int string_index_of(char c, String s);
+
+
+/**
+ * @brief Returns a new instance of a StringIterator
+ */
+extern StringIterator string_iterator_new(String *s);
+
+
+/**
+ * @brief Checks if there are more characters to iterate over.
+ */
+extern int string_iterator_has_next(StringIterator *iter);
+
+
+/**
+ * @brief Returns the next character and advances the iterator.
+ */
+extern char string_iterator_next(StringIterator *iter);
 
 #endif

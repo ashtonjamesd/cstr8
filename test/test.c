@@ -153,6 +153,31 @@ void test_string_last() {
     string_free(str);
 }
 
+void test_string_contains() {
+    String str = string_new("Hello, World!\n");
+
+    assert_true(string_contains('H', str));
+    assert_true(string_contains('\n', str));
+    assert_true(string_contains(',', str));
+
+    assert_false(string_contains('a', str));
+
+    string_free(str);
+}
+
+void test_string_index_of() {
+    String str = string_new("Hello, World!\n");
+
+    assert_true(string_index_of('l', str) == 2);
+    assert_true(string_index_of(',', str) == 5);
+
+    string_free(str);
+}
+
+void test_string_iterator() {
+    
+}
+
 void test_string_array() {
     StringArray *arr = string_array_empty();
 
@@ -204,6 +229,8 @@ int main(void) {
     test_string_last();
     test_string_array();
     test_string_array_from();
+    test_string_contains();
+    test_string_index_of();
     
     return test_finish();
 }
