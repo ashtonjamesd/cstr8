@@ -78,28 +78,75 @@ String string_to_lower(String str) {
     while (string_iterator_has_next(&iter)) {
         char c = string_iterator_next(&iter);
         
-        if (c >= 'A' && c <= 'Z') {
-            _str._value[i++] = c + ('a' - 'A');
+        if (string_char_is_upper_letter(c)) {
+            _set_char_at(i++, c + ('a' - 'A'), _str);
         } else {
-            _str._value[i++] = c;
+            _set_char_at(i++, c, _str);
         }
     }
 
     return _str;
 }
 
+static void _terminate_string(String s, int len) {
+    _set_char_at(len, '\0', s);
+}
+
+String string_reverse(String s) {
+    int len = string_len(s);
+    String reversed = string_empty();
+
+    free(reversed._value);
+    reversed._value = malloc(len + 1);
+
+    for (int i = 0; i < len; i++) {
+        _set_char_at(i, s._value[len - 1 - i], reversed);
+    }
+
+    _terminate_string(reversed, len);
+    return reversed;
+}
+
 String string_to_upper(String str) {
     String _str = string_from(str);
-
     StringIterator iter = string_iterator_new(&str);
-    int i = 0;
+    
     while (string_iterator_has_next(&iter)) {
         char c = string_iterator_next(&iter);
 
-        if (c >= 'a' && c <= 'z') {
-            _str._value[i++] = c + ('A' - 'a');
+        if (string_char_is_lower_letter(c)) {
+            _set_char_at(iter.index - 1, c + ('A' - 'a'), _str);
         } else {
-            _str._value[i++] = c;
+            _set_char_at(iter.index - 1, c, _str);
+        }
+    }
+
+    return _str;
+}
+
+int string_char_is_lower_letter(char c) {
+    return ('a' <= c && c <= 'z');
+}
+
+int string_char_is_upper_letter(char c) {
+    return ('A' <= c && c <= 'Z');
+}
+
+int string_char_is_letter(char c) {
+    return string_char_is_lower_letter(c) || string_char_is_upper_letter(c);
+}
+
+int string_char_is_digit(char c) {
+    return ('0' <= c && c <= '9');
+}
+
+String string_replace_char(char replace, char with, String str) {
+    String _str = string_from(str);
+    StringIterator iter = string_iterator_new(&str);
+
+    while (string_iterator_has_next(&iter)) {
+        if (string_iterator_next(&iter) == replace) {
+            _set_char_at(iter.index - 1, with, _str);
         }
     }
 
@@ -137,6 +184,7 @@ StringResult string_substring(int start, int len, String str) {
 
     for (int i = start; i < len + start; i++) {
         if (i >= string_len(str)) {
+            free(_str);
             return err(LENGTH_OF_SUBSTRING_EXCEEDS_STRING_ERR);
         }
 
@@ -184,8 +232,8 @@ StringArrayResult string_split(char c, String str) {
         } else {
             int len = string_len(current);
             current._value = realloc(current._value, len + 2);
-            current._value[len] = _c;
-            current._value[len + 1] = '\0';
+            _set_char_at(len, _c, current);
+            _terminate_string(current, len + 1);
         }
     }
 
@@ -288,6 +336,7 @@ int string_is_empty(String str) {
 
 int string_contains(char c, String s) {
     StringIterator iter = string_iterator_new(&s);
+
     while (string_iterator_has_next(&iter)) {
         if (string_iterator_next(&iter) == c) {
             return 1;
@@ -300,7 +349,7 @@ int string_contains(char c, String s) {
 String string_empty() {
     String _str;
     _str._value = malloc(1);
-    _str._value[0] = '\0';
+    _terminate_string(_str, 0);
 
     return _str;
 }
@@ -311,9 +360,9 @@ String string_new(const char *str) {
 
     int i;
     for (i = 0; str[i] != '\0'; i++) {
-        _str._value[i] = str[i];
+        _set_char_at(i, str[i], _str);
     }
-    _str._value[i] = '\0';
+    _terminate_string(_str, i);
 
     return _str;
 }

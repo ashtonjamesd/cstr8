@@ -144,9 +144,9 @@ extern void string_array_result_free(StringArrayResult result);
 extern StringResult string_substring(int start, int len, String s);
 
 /**
- * @brief Returns a new string instance that is 'str1' with 'c' appended to the end.
+ * @brief Returns a new string instance that is 's' with 'c' appended to the end.
  */
-extern String string_concat_char(String str1, char c);
+extern String string_concat_char(String s, char c);
 
 
 /**
@@ -266,16 +266,12 @@ extern char string_char_at(int i, String s);
 
 /**
  * @brief Returns the first character of the string.
- * 
- * No check for empty string is done.
  */
 extern char string_first(String s);
 
 
 /**
  * @brief Returns the last character of the string.
- * 
- * No check for empty string is done.
  */
 extern char string_last(String s);
 
@@ -289,11 +285,50 @@ extern String string_to_lower(String s);
 
 
 /**
+ * @brief Returns a new string that is the reversal of 's'
+ * 
+ * The returned string must be freed with string_free().
+ */
+extern String string_reverse(String s);
+
+
+/**
  * @brief Converts the string to uppercase.
  * 
  * The returned string must be freed with string_free().
  */
 extern String string_to_upper(String s);
+
+/**
+ * @brief Returns true if the given character is a lowercase letter
+ */
+extern int string_char_is_lower_letter(char c);
+
+
+/**
+ * @brief Returns true if the given character is an uppercase letter
+ */
+extern int string_char_is_upper_letter(char c);
+
+
+/**
+ * @brief Returns true if the given character is a letter
+ */
+extern int string_char_is_letter(char c);
+
+
+/**
+ * @brief Returns true if the given character is a digit
+ */
+extern int string_char_is_digit(char c);
+
+
+/**
+ * @brief Returns a new instance of a string with all instances of 'replace' with 'with'.
+ * 
+ * The returned string must be freed with string_free().
+ */
+extern String string_replace_char(char replace, char with, String s);
 
 
 /**
