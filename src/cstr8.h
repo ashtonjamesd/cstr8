@@ -1,7 +1,6 @@
 #ifndef CSTRING_H
 #define CSTRING_H
 
-
 /**
  * @brief Represents a dynamically allocated string.
  */
@@ -275,6 +274,17 @@ extern char string_first(String s);
  */
 extern char string_last(String s);
 
+/**
+ * @brief Returns the uppercase variant of a lowercase character
+ */
+extern char string_char_to_upper(char c);
+
+
+/**
+ * @brief Returns the lowercase variant of an uppercase character
+ */
+extern char string_char_to_lower(char c);
+
 
 /**
  * @brief Converts the string to lowercase.
@@ -321,6 +331,34 @@ extern int string_char_is_letter(char c);
  * @brief Returns true if the given character is a digit
  */
 extern int string_char_is_digit(char c);
+
+
+/**
+ * @brief Returns true if the given character is a whitespace character
+ * 
+ * whitespace characters:
+ *   - ` `, `\t`, `\r`, `\n`, `\v`, `\f`
+ * 
+ */
+extern int string_char_is_space(char c);
+
+
+/**
+ * @brief Returns true if the given character is a valid hexadecimal character
+ */
+extern int string_char_is_hex(char c);
+
+
+/**
+ * @brief Returns true if the given character is a valid binary character
+ */
+extern int string_char_is_bin(char c);
+
+
+/**
+ * @brief Returns true if the given character is a control character
+ */
+extern int string_char_is_control(char c);
 
 
 /**

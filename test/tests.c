@@ -154,14 +154,14 @@ void test_string_to_upper() {
     string_free(str2);
 }
 
-void test_char_at() {
+void test_string_char_at() {
     String str = string_new("Hello, World!\n");
     assert_char_eq(string_char_at(0, str), 'H');
 
     string_free(str);
 }
 
-void test_char_at_null() {
+void test_string_char_at_null() {
     String str = string_new("Hello, World!\n");
     assert_char_eq(string_char_at(100, str), '\0');
 
@@ -286,7 +286,7 @@ void test_string_repeat() {
     string_free(str);
 }
 
-void test_index_of_empty_string() {
+void test_string_index_of_empty_string() {
     String str = string_new("");
 
     assert_true(string_index_of('l', str) == -1);
@@ -421,8 +421,8 @@ int main(void) {
     run_test(test_string_ends_with_char);
     run_test(test_string_to_lower);
     run_test(test_string_to_upper);
-    run_test(test_char_at);
-    run_test(test_char_at_null);
+    run_test(test_string_char_at);
+    run_test(test_string_char_at_null);
     run_test(test_string_is_empty);
     run_test(test_string_first);
     run_test(test_string_last);
@@ -437,7 +437,7 @@ int main(void) {
     run_test(test_string_concat_char);
     run_test(test_string_concat_char_empty);
     run_test(test_string_repeat);
-    run_test(test_index_of_empty_string);
+    run_test(test_string_index_of_empty_string);
     run_test(test_string_replace_char);
     run_test(test_string_replace_char_empty);
     run_test(test_string_replace_char_string);

@@ -66,6 +66,18 @@ char string_last(String str) {
     return string_char_at(string_len(str) - 1, str);
 }
 
+char string_char_to_upper(char c) {
+    if (c >= 'a' && c <= 'z')
+        return c - ('a' - 'A');
+    return c;
+}
+
+char string_char_to_lower(char c) {
+    if (c >= 'A' && c <= 'Z')
+        return c + ('a' - 'A');
+    return c;
+}
+
 static void _set_char_at(int i, char c, String str) {
     str._value[i] = c;
 }
@@ -138,6 +150,30 @@ int string_char_is_letter(char c) {
 
 int string_char_is_digit(char c) {
     return ('0' <= c && c <= '9');
+}
+
+int string_char_is_space(char c) {
+    return c == ' '
+        || c == '\t'
+        || c == '\r'
+        || c == '\n'
+        || c == '\v'
+        || c == '\f';
+}
+
+int string_char_is_hex(char c) {
+    return (c >= '0' && c <= '9') ||
+           (c >= 'a' && c <= 'f') ||
+           (c >= 'A' && c <= 'F');
+}
+
+
+int string_char_is_bin(char c) {
+    return c == '1' || c == '0';
+}
+
+int string_char_is_control(char c) {
+    return (c >= 0 && c <= 31) || c == 127;
 }
 
 String string_replace_char(char replace, char with, String str) {
