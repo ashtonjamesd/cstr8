@@ -32,8 +32,8 @@ typedef struct {
  * @brief Error codes used in string operations.
  */
 typedef enum {
-    LENGTH_OF_SUBSTRING_EXCEEDS_STRING_ERR,  /**< Substring length goes beyond string bounds. */
-    LENGTH_OF_SUBSTRING_LESS_THAN_0,         /**< Substring length is negative. */
+    LENGTH_OF_SUBSTRING_EXCEEDS_STRING_ERR,
+    LENGTH_OF_SUBSTRING_LESS_THAN_0,
 } StringErrCode;
 
 
@@ -142,10 +142,17 @@ extern void string_array_result_free(StringArrayResult result);
  */
 extern StringResult string_substring(int start, int len, String s);
 
+
 /**
  * @brief Returns a new string instance that is 's' with 'c' appended to the end.
  */
 extern String string_concat_char(String s, char c);
+
+
+/**
+ * @brief Returns a new string instance that is the concatenation of 's1' and 's2'.
+ */
+extern String string_concat_string(String s1, String s2);
 
 
 /**
@@ -221,6 +228,14 @@ extern char* string_str(String s);
  * @return 1 if equal, 0 otherwise.
  */
 extern int string_equals(String s1, String s2);
+
+
+/**
+ * @brief Compares two strings for equality ignoring case
+ * 
+ * @return 1 if equal, 0 otherwise.
+ */
+extern int string_equals_ignore_case(String s1, String s2);
 
 
 /**
@@ -362,6 +377,18 @@ extern int string_char_is_control(char c);
 
 
 /**
+ * @brief Returns true if the given character is a punctuation character
+ */
+extern int string_char_is_punctuation(char c);
+
+
+/**
+ * @brief Returns true if the given character is a letter or digit character
+ */
+extern int string_char_is_letter_or_digit(char c);
+
+
+/**
  * @brief Returns a new instance of a string with all instances of 'replace' with 'with'.
  * 
  * The returned string must be freed with string_free().
@@ -370,11 +397,35 @@ extern String string_replace_char(char replace, char with, String s);
 
 
 /**
+ * @brief Returns a new instance of a string with whitespace characters at the beginning and end removed.
+ */
+extern String string_trim(String s);
+
+
+/**
+ * @brief Returns a new instance of a string with leading whitespace characters removed.
+ */
+extern String string_trim_left(String s);
+
+
+/**
+ * @brief Returns a new instance of a string with trailing whitespace characters removed.
+ */
+extern String string_trim_right(String s);
+
+
+/**
  * @brief Returns the index of the first occurrence of 'c'
  * 
  * Returns -1 if 'c' is not contained in 's'
  */
 extern int string_index_of(char c, String s);
+
+
+/**
+ * @brief Returns the number of occurrences of 'c' in 's'
+ */
+extern int string_char_count(char c, String s);
 
 
 /**

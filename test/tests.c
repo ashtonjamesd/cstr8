@@ -108,6 +108,16 @@ void test_string_equals() {
     string_free(str2);
 }
 
+void test_string_equals_ignore_case() {
+    String str1 = string_new("Hello, World!\n");
+    String str2 = string_new("hello, world!\n");
+
+    assert_true(string_equals_ignore_case(str1, str2));
+
+    string_free(str1);
+    string_free(str2);
+}
+
 void test_string_not_equals() {
     String str1 = string_new("Hello, World!\n");
     String str2 = string_new("Helrld!\n");
@@ -372,17 +382,103 @@ void test_string_reverse_with_special_chars() {
     string_free(reversed);
 }
 
+void test_string_char_count() {
+    String str = string_new("Hello, World!");
+
+    int count1 = string_char_count('l', str);
+    int count2 = string_char_count('\n', str);
+    int count3 = string_char_count('W', str);
+    int count4 = string_char_count(' ', str);
+
+    assert_true(count1 == 3);
+    assert_true(count2 == 0);
+    assert_true(count3 == 1);
+    assert_true(count4 == 1);
+
+    string_free(str);
+}
+
+void test_string_concat_string() {
+    String str1 = string_new("Hello,");
+    String str2 = string_new(" World!");
+    
+    String both = string_concat_string(str1, str2);
+
+    assert_string_eq("Hello, World!", string_str(both));
+
+    string_free(str1);
+    string_free(str2);
+    string_free(both);
+}
+
+void test_string_trim_left() {
+    String str = string_new("     Hello, World!");
+    String trimmed = string_trim_left(str);
+
+    assert_string_eq(string_str(trimmed), "Hello, World!");
+
+    string_free(str);
+    string_free(trimmed);
+}
+
+void test_string_trim_left_empty() {
+    String str = string_new("     ");
+    String trimmed = string_trim_left(str);
+
+    assert_string_eq(string_str(trimmed), "");
+
+    string_free(str);
+    string_free(trimmed);
+}
+
+void test_string_trim_right() {
+    String str = string_new("Hello, World!       ");
+    String trimmed = string_trim_right(str);
+
+    assert_string_eq(string_str(trimmed), "Hello, World!");
+
+    string_free(str);
+    string_free(trimmed);
+}
+
+void test_string_trim_right_empty() {
+    String str = string_new("     ");
+    String trimmed = string_trim_right(str);
+
+    assert_string_eq(string_str(trimmed), "");
+
+    string_free(str);
+    string_free(trimmed);
+}
+
+void test_string_trim() {
+    String str = string_new("        Hello, World!       ");
+    String trimmed = string_trim(str);
+
+    assert_string_eq(string_str(trimmed), "Hello, World!");
+
+    string_free(str);
+    string_free(trimmed);
+}
 
 void test_string_array() {
     StringArray *arr = string_array_empty();
 
-    string_array_add(string_new("String 1"), arr);
-    string_array_add(string_new("String 2"), arr);
-    string_array_add(string_new("String 3"), arr);
+    String str1 = string_new("String 1");
+    String str2 = string_new("String 2");
+    String str3 = string_new("String 3");
+
+    string_array_add(str1, arr);
+    string_array_add(str2, arr);
+    string_array_add(str3, arr);
 
     assert_string_eq(string_str(arr->items[0]), "String 1");
     assert_string_eq(string_str(arr->items[1]), "String 2");
     assert_string_eq(string_str(arr->items[2]), "String 3");
+
+    string_free(str1);
+    string_free(str2);
+    string_free(str3);
 
     string_array_free(arr);
 }
@@ -390,9 +486,13 @@ void test_string_array() {
 void test_string_array_from() {
     StringArray *arr1 = string_array_empty();
 
-    string_array_add(string_new("String 1"), arr1);
-    string_array_add(string_new("String 2"), arr1);
-    string_array_add(string_new("String 3"), arr1);
+    String str1 = string_new("String 1");
+    String str2 = string_new("String 2");
+    String str3 = string_new("String 3");
+
+    string_array_add(str1, arr1);
+    string_array_add(str2, arr1);
+    string_array_add(str3, arr1);
     
     StringArray *arr2 = string_array_from(arr1);
 
@@ -400,8 +500,26 @@ void test_string_array_from() {
     assert_string_eq(string_str(arr2->items[1]), "String 2");
     assert_string_eq(string_str(arr2->items[2]), "String 3");
 
+    string_free(str1);
+    string_free(str2);
+    string_free(str3);
+
     string_array_free(arr1);
     string_array_free(arr2);
+}
+
+void test_string_array_create_from_loop() {
+    StringArray *arr = string_array_empty();
+    
+    for (int i = 0; i < 10; i++) {
+        string_array_add(string_new("String"), arr);
+    }
+
+    for (int i = 0; i < 10; i++) {
+        assert_string_eq(arr->items[i]._value, "String");
+    }
+
+    string_array_free(arr);
 }
 
 int main(void) {
@@ -417,6 +535,7 @@ int main(void) {
     run_test(test_string_len);
     run_test(test_string_equals);
     run_test(test_string_not_equals);
+    run_test(test_string_equals_ignore_case);
     run_test(test_string_starts_with_char);
     run_test(test_string_ends_with_char);
     run_test(test_string_to_lower);
@@ -426,8 +545,6 @@ int main(void) {
     run_test(test_string_is_empty);
     run_test(test_string_first);
     run_test(test_string_last);
-    run_test(test_string_array);
-    run_test(test_string_array_from);
     run_test(test_string_contains);
     run_test(test_string_contains_empty);
     run_test(test_string_contains_single_char);
@@ -445,6 +562,16 @@ int main(void) {
     run_test(test_string_reverse_with_special_chars);
     run_test(test_string_reverse_empty);
     run_test(test_string_reverse_single_char);
+    run_test(test_string_char_count);
+    run_test(test_string_concat_string);
+    run_test(test_string_trim_left);
+    run_test(test_string_trim_left_empty);
+    run_test(test_string_trim_right);
+    run_test(test_string_trim_right_empty);
+    run_test(test_string_trim);
+
+    run_test(test_string_array);
+    run_test(test_string_array_from);
 
     return test_finish();
 }

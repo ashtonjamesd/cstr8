@@ -176,6 +176,17 @@ int string_char_is_control(char c) {
     return (c >= 0 && c <= 31) || c == 127;
 }
 
+int string_char_is_punctuation(char c) {
+    return (c >= 33  && c <=  47)  || // !"#$%&'()*+,-./
+           (c >= 58  && c <=  64)  || // :;<=>?@
+           (c >= 91  && c <=  96)  || // [\]^_`
+           (c >= 123 && c <= 126);    // {|}~
+}
+
+int string_char_is_letter_or_digit(char c) {
+    return string_char_is_letter(c) || string_char_is_digit(c);
+}
+
 String string_replace_char(char replace, char with, String str) {
     String _str = string_from(str);
     StringIterator iter = string_iterator_new(&str);
@@ -189,6 +200,80 @@ String string_replace_char(char replace, char with, String str) {
     return _str;
 }
 
+String string_trim(String s) {
+    int len = string_len(s);
+    int start = 0;
+    int end = len - 1;
+
+    while (start <= end && string_char_is_space(s._value[start])) {
+        start++;
+    }
+
+    if (start > end) {
+        return string_empty();
+    }
+
+    while (end >= start && string_char_is_space(s._value[end])) {
+        end--;
+    }
+
+    int new_len = end - start + 1;
+    StringResult result = string_substring(start, new_len, s);
+    if (!result.is_ok) {
+        return string_empty();
+    }
+
+    return result.as.ok.value;
+}
+
+
+String string_trim_left(String s) {
+    int len = string_len(s);
+    int start = 0;
+
+    while (start < len && string_char_is_space(s._value[start])) {
+        start++;
+    }
+
+    if (start == len) {
+        return string_empty();
+    }
+
+    StringResult result = string_substring(start, len - start, s);
+    if (!result.is_ok) {
+        return string_empty();
+    }
+    
+    String trimmed = string_from(result.as.ok.value);
+    string_result_free(result);
+
+    return trimmed;
+}
+
+String string_trim_right(String s) {
+    int len = string_len(s);
+    int end = len - 1;
+
+    while (end >= 0 && string_char_is_space(s._value[end])) {
+        end--;
+    }
+
+    if (end < 0) {
+        return string_empty();
+    }
+
+    StringResult result = string_substring(0, end + 1, s);
+    if (!result.is_ok) {
+        return string_empty();
+    }
+
+    String trimmed = string_from(result.as.ok.value);
+    string_result_free(result);
+    
+    return trimmed;
+}
+
+
 int string_index_of(char c, String str) {
     StringIterator iter = string_iterator_new(&str);
 
@@ -199,6 +284,19 @@ int string_index_of(char c, String str) {
     }
 
     return -1;
+}
+
+int string_char_count(char c, String s) {
+    int count = 0;
+    
+    StringIterator iter = string_iterator_new(&s);
+    while (string_iterator_has_next(&iter)) {
+        if (string_iterator_next(&iter) == c) {
+            count++;
+        }
+    }
+
+    return count;
 }
 
 int string_starts_with(char c, String str) {
@@ -253,6 +351,30 @@ String string_concat_char(String str, char c) {
     return _str;
 }
 
+String string_concat_string(String s1, String s2) {
+    int len1 = string_len(s1);
+    int len2 = string_len(s2);
+    int total_len = len1 + len2;
+
+    char *new_val = malloc(total_len + 1);
+
+    for (int i = 0; i < len1; i++) {
+        new_val[i] = s1._value[i];
+    }
+
+    for (int i = 0; i < len2; i++) {
+        new_val[len1 + i] = s2._value[i];
+    }
+
+    new_val[total_len] = '\0';
+
+    String result;
+    result._value = new_val;
+
+    return result;
+}
+
+
 StringArrayResult string_split(char c, String str) {
     StringArray *parts = string_array_empty();
     StringIterator iter = string_iterator_new(&str);
@@ -264,6 +386,7 @@ StringArrayResult string_split(char c, String str) {
 
         if (_c == c) {
             string_array_add(current, parts);
+            string_free(current);
             current = string_empty();
         } else {
             int len = string_len(current);
@@ -274,6 +397,7 @@ StringArrayResult string_split(char c, String str) {
     }
 
     string_array_add(current, parts);
+    string_free(current);
 
     StringArrayResult result;
     result.is_ok = 1;
@@ -284,7 +408,7 @@ StringArrayResult string_split(char c, String str) {
 
 void string_result_free(StringResult result) {
     if (result.is_ok) {
-        free(result.as.ok.value._value);
+        string_free(result.as.ok.value);
     }
 }
 
@@ -298,7 +422,7 @@ StringArray *string_array_from(StringArray *arr) {
     StringArray *_arr = string_array_empty();
 
     for (int i = 0; i < arr->count; i++) {
-        string_array_add(string_from(arr->items[i]), _arr);
+        string_array_add(arr->items[i], _arr);
     }
 
     return _arr;
@@ -306,11 +430,9 @@ StringArray *string_array_from(StringArray *arr) {
 
 StringArray *string_array_new(String *strs, int count) {
     StringArray *_arr = string_array_empty();
-    _arr->items = malloc(sizeof(String) * count);
-    _arr->capacity = count;
     
     for (int i = 0; i < count; i++) {
-        _arr->items[i] = strs[i];
+        string_array_add(strs[i], _arr);
     }
 
     return _arr;
@@ -331,7 +453,7 @@ void string_array_add(String str, StringArray *arr) {
         arr->items = realloc(arr->items, sizeof(String) * arr->capacity);
     }
 
-    arr->items[arr->count++] = str;
+    arr->items[arr->count++] = string_from(str);
 }
 
 void string_array_free(StringArray *arr) {
@@ -359,6 +481,18 @@ int string_equals(String str1, String str2) {
     }
 
     return 1;
+}
+
+int string_equals_ignore_case(String s1, String s2) {
+    String s1lower = string_to_lower(s1);
+    String s2lower = string_to_lower(s2);
+
+    int equal = string_equals(s1lower, s2lower);
+
+    string_free(s1lower);
+    string_free(s2lower);
+
+    return equal;
 }
 
 int string_is_empty(String str) {
@@ -391,17 +525,19 @@ String string_empty() {
 }
 
 String string_new(const char *str) {
-    String _str;
-    _str._value = malloc(sizeof(str));
+    String _str = {0};
 
-    int i;
-    for (i = 0; str[i] != '\0'; i++) {
-        _set_char_at(i, str[i], _str);
+    int len = _len((char *)str);
+    _str._value = malloc(len + 1);
+
+    for (int i = 0; i < len; i++) {
+        _str._value[i] = str[i];
     }
-    _terminate_string(_str, i);
+    _str._value[len] = '\0';
 
     return _str;
 }
+
 
 String string_from(String str) {
     return string_new(str._value);
