@@ -187,6 +187,20 @@ int string_char_is_letter_or_digit(char c) {
     return string_char_is_letter(c) || string_char_is_digit(c);
 }
 
+int string_char_is_vowel(char c) {
+    c = string_char_to_lower(c);
+    
+    return c == 'a'
+        || c == 'e'
+        || c == 'i'
+        || c == 'o'
+        || c == 'u';
+}
+
+int string_char_is_consonant(char c) {
+    return string_char_is_letter(c) && !string_char_is_vowel(c);
+}
+
 String string_replace_char(char replace, char with, String str) {
     String _str = string_from(str);
     StringIterator iter = string_iterator_new(&str);
@@ -299,9 +313,25 @@ int string_char_count(char c, String s) {
     return count;
 }
 
-int string_starts_with(char c, String str) {
+int string_starts_with_char(char c, String str) {
     if (string_len(str) == 0) return 0;
     return string_first(str) == c;
+}
+
+int string_starts_with_string(String a, String b) {
+    StringIterator iter = string_iterator_new(&b);
+
+    while (string_iterator_has_next(&iter)) {
+        char c = string_iterator_next(&iter);
+        // printf("%c", c);
+
+        if (string_char_at(iter.index, a) != c) {
+            return 0;
+        }
+
+    }
+
+    return 1;
 }
 
 int string_ends_with(char c, String str) {

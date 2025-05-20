@@ -131,7 +131,7 @@ void test_string_not_equals() {
 void test_string_starts_with_char() {
     String str = string_new("Hello, World!\n");
 
-    assert_true(string_starts_with('H', str));
+    assert_true(string_starts_with_char('H', str));
 
     string_free(str);
 }
@@ -461,6 +461,16 @@ void test_string_trim() {
     string_free(trimmed);
 }
 
+void test_string_starts_with_string() {
+    String a = string_new("Hello, World!");
+    String b = string_new("Hel");
+
+    assert_true(string_starts_with_string(a, b));
+
+    string_free(a);
+    string_free(b);
+}
+
 void test_string_array() {
     StringArray *arr = string_array_empty();
 
@@ -569,6 +579,7 @@ int main(void) {
     run_test(test_string_trim_right);
     run_test(test_string_trim_right_empty);
     run_test(test_string_trim);
+    run_test(test_string_starts_with_string);
 
     run_test(test_string_array);
     run_test(test_string_array_from);

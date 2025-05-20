@@ -1,5 +1,5 @@
-#ifndef CSTRING_H
-#define CSTRING_H
+#ifndef CSTR8_H
+#define CSTR8_H
 
 /**
  * @brief Represents a dynamically allocated string.
@@ -243,7 +243,15 @@ extern int string_equals_ignore_case(String s1, String s2);
  * 
  * @return 1 if true, 0 otherwise.
  */
-extern int string_starts_with(char c, String s);
+extern int string_starts_with_char(char c, String s);
+
+
+/**
+ * @brief Checks if the string 'a' starts with the string 'b'
+ * 
+ * @return 1 if true, 0 otherwise.
+ */
+extern int string_starts_with_string(String a, String b);
 
 
 /**
@@ -386,6 +394,18 @@ extern int string_char_is_punctuation(char c);
  * @brief Returns true if the given character is a letter or digit character
  */
 extern int string_char_is_letter_or_digit(char c);
+
+
+/**
+ * @brief Returns true if the given character is a vowel
+ */
+extern int string_char_is_vowel(char c);
+
+
+/**
+ * @brief Returns true if the given character is a consonant
+ */
+extern int string_char_is_consonant(char c);
 
 
 /**
