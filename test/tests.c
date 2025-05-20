@@ -1,25 +1,32 @@
 #include <string.h>
 
-int bad_assertions = 0;
+int tests_failed = 0;
 int tests_ran = 0;
-
-static void assert_fail() {
-    printf("assertion failed.\n");
-    bad_assertions++;
-}
+int assertions_failed = 0;
 
 static int test_finish() {
-    printf("finished testing.\n");
-    printf("%d/%d test(s) passed\n", tests_ran - bad_assertions, tests_ran);
+    printf("\n%d assertions failed\n", assertions_failed);
+    printf("\nfinished testing.\n");
+    printf("%d/%d tests(s) passed\n", tests_ran - tests_failed, tests_ran);
 
-    return bad_assertions == 0;
+    return tests_failed == 0;
+}
+
+void run_test(void (*fp)()) {
+    int prev_assertions_failed = assertions_failed;
+    fp();
+    tests_ran++;
+
+    if (prev_assertions_failed != assertions_failed) {
+        printf("test '%d' failed", tests_ran - 1);
+        tests_failed++;
+    }
 }
 
 #define assert(condition) \
     do { \
-        tests_ran++; \
         if (!(condition)) { \
-            assert_fail(); \
+            assertions_failed++; \
         } \
     } while (0)
 

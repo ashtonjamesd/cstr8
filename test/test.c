@@ -190,6 +190,58 @@ void test_string_split() {
     string_free(str);
 }
 
+void test_string_split_empty() {
+    String str = string_empty();
+    StringArrayResult result = string_split(' ', str);
+
+    StringArray *arr = result.as.ok.arr;
+
+    assert_true(result.is_ok);
+    assert_true(result.as.ok.arr->count == 1);
+    assert_string_eq(arr->items[0]._value, "");
+
+    string_array_result_free(result);
+
+    string_free(str);
+}
+
+void test_string_concat_char() {
+    String str1 = string_new("Hello, World!");
+    String str2 = string_concat_char(str1, 'A');
+
+    assert_string_eq(string_str(str2), "Hello, World!A");
+
+    string_free(str1);
+    string_free(str2);
+}
+
+void test_string_concat_char_empty() {
+    String str1 = string_new("");
+    String str2 = string_concat_char(str1, 'A');
+
+    assert_string_eq(string_str(str2), "A");
+
+    string_free(str1);
+    string_free(str2);
+}
+
+void test_string_repeat() {
+    String str = string_repeat('a', 5);
+
+    assert_string_eq(string_str(str), "aaaaa");
+    string_free(str);
+}
+
+void test_index_of_empty_string() {
+    String str = string_new("");
+
+    assert_true(string_index_of('l', str) == -1);
+    assert_true(string_index_of('\0', str) == -1);
+    assert_true(string_index_of(' ', str) == -1);
+
+    string_free(str);
+}
+
 void test_string_array() {
     StringArray *arr = string_array_empty();
 
@@ -222,28 +274,33 @@ void test_string_array_from() {
 }
 
 int main(void) {
-    test_string_new();
-    test_string_from();
-    test_string_empty();
-    test_string_substring();
-    test_string_substring_empty();
-    test_string_len();
-    test_string_equals();
-    test_string_not_equals();
-    test_string_starts_with_char();
-    test_string_ends_with_char();
-    test_string_to_lower();
-    test_string_to_upper();
-    test_char_at();
-    test_char_at_null();
-    test_string_is_empty();
-    test_string_first();
-    test_string_last();
-    test_string_array();
-    test_string_array_from();
-    test_string_contains();
-    test_string_index_of();
-    test_string_split();
+    run_test(test_string_new);
+    run_test(test_string_from);
+    run_test(test_string_empty);
+    run_test(test_string_substring);
+    run_test(test_string_substring_empty);
+    run_test(test_string_len);
+    run_test(test_string_equals);
+    run_test(test_string_not_equals);
+    run_test(test_string_starts_with_char);
+    run_test(test_string_ends_with_char);
+    run_test(test_string_to_lower);
+    run_test(test_string_to_upper);
+    run_test(test_char_at);
+    run_test(test_char_at_null);
+    run_test(test_string_is_empty);
+    run_test(test_string_first);
+    run_test(test_string_last);
+    run_test(test_string_array);
+    run_test(test_string_array_from);
+    run_test(test_string_contains);
+    run_test(test_string_index_of);
+    run_test(test_string_split);
+    run_test(test_string_split_empty);
+    run_test(test_string_concat_char);
+    run_test(test_string_concat_char_empty);
+    run_test(test_string_repeat);
+    run_test(test_index_of_empty_string);
 
     return test_finish();
 }

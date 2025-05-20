@@ -115,6 +115,13 @@ extern String string_empty();
  */
 extern String string_from(String s);
 
+/**
+ * @brief Creates a new cstr8 string filled with 'c', 'n' times
+ * 
+ * The returned string must be freed with string_free().
+ */
+extern String string_repeat(char c, int n);
+
 
 /**
  * @brief Frees a cstr8 string instance.
@@ -135,6 +142,11 @@ extern void string_array_result_free(StringArrayResult result);
  * If successful, the result's value must be freed with string_free().
  */
 extern StringResult string_substring(int start, int len, String s);
+
+/**
+ * @brief Returns a new string instance that is 'str1' with 'c' appended to the end.
+ */
+extern String string_concat_char(String str1, char c);
 
 
 /**

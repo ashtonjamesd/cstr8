@@ -109,12 +109,10 @@ String string_to_upper(String str) {
 int string_index_of(char c, String str) {
     StringIterator iter = string_iterator_new(&str);
 
-    int i = 0;
     while (string_iterator_has_next(&iter)) {
         if (string_iterator_next(&iter) == c) {
-            return i;
+            return iter.index - 1;
         }
-        i++;
     }
 
     return -1;
@@ -150,6 +148,25 @@ StringResult string_substring(int start, int len, String str) {
     free(_str);
 
     return result;
+}
+
+String string_concat_char(String str, char c) {
+    int len = string_len(str);
+
+    char *new_val = malloc(len + 2);
+    
+    StringIterator iter = string_iterator_new(&str);
+    while (string_iterator_has_next(&iter)) {
+        new_val[iter.index] = string_iterator_next(&iter);
+    }
+
+    new_val[len] = c;
+    new_val[len + 1] = '\0';
+    
+    String _str;
+    _str._value = new_val;
+
+    return _str;
 }
 
 StringArrayResult string_split(char c, String str) {
@@ -303,6 +320,19 @@ String string_new(const char *str) {
 
 String string_from(String str) {
     return string_new(str._value);
+}
+
+String string_repeat(char c, int n) {
+    String base_str = string_empty();
+    
+    for (int i = 0; i < n; i++) {
+        String _str = string_concat_char(base_str, c);
+        string_free(base_str);
+        base_str = string_from(_str);
+        string_free(_str);
+    }
+
+    return base_str;
 }
 
 void string_free(String str) {
