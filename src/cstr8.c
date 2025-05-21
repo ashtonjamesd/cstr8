@@ -14,8 +14,8 @@ static char *err_str(StringErrCode code) {
 }
 
 static int _len(char *str) {
-    int t = 0;
-    for (int i = 0; str[i]; i++) {
+    int i, t = 0;
+    for (i = 0; str[i]; i++) {
         t++;
     }
 
@@ -111,7 +111,8 @@ String string_reverse(String s) {
     free(reversed._value);
     reversed._value = malloc(len + 1);
 
-    for (int i = 0; i < len; i++) {
+    int i;
+    for (i = 0; i < len; i++) {
         _set_char_at(i, s._value[len - 1 - i], reversed);
     }
 
@@ -177,10 +178,10 @@ int string_char_is_control(char c) {
 }
 
 int string_char_is_punctuation(char c) {
-    return (c >= 33  && c <=  47)  || // !"#$%&'()*+,-./
-           (c >= 58  && c <=  64)  || // :;<=>?@
-           (c >= 91  && c <=  96)  || // [\]^_`
-           (c >= 123 && c <= 126);    // {|}~
+    return (c >= 33  && c <=  47)  || /* !"#$%&'()*+,-./ */
+           (c >= 58  && c <=  64)  || /* :;<=>?@ */
+           (c >= 91  && c <=  96)  || /* [\]^_` */
+           (c >= 123 && c <= 126);    /* {|}~ */
 }
 
 int string_char_is_letter_or_digit(char c) {
@@ -323,12 +324,10 @@ int string_starts_with_string(String a, String b) {
 
     while (string_iterator_has_next(&iter)) {
         char c = string_iterator_next(&iter);
-        // printf("%c", c);
 
-        if (string_char_at(iter.index, a) != c) {
+        if (string_char_at(iter.index - 1, a) != c) {
             return 0;
         }
-
     }
 
     return 1;
@@ -346,7 +345,8 @@ StringResult string_substring(int start, int len, String str) {
 
     char *_str = (char *)malloc(len + 1);
 
-    for (int i = start; i < len + start; i++) {
+    int i;
+    for (i = start; i < len + start; i++) {
         if (i >= string_len(str)) {
             free(_str);
             return err(LENGTH_OF_SUBSTRING_EXCEEDS_STRING_ERR);
@@ -388,11 +388,12 @@ String string_concat_string(String s1, String s2) {
 
     char *new_val = malloc(total_len + 1);
 
-    for (int i = 0; i < len1; i++) {
+    int i;
+    for (i = 0; i < len1; i++) {
         new_val[i] = s1._value[i];
     }
 
-    for (int i = 0; i < len2; i++) {
+    for (i = 0; i < len2; i++) {
         new_val[len1 + i] = s2._value[i];
     }
 
@@ -451,7 +452,8 @@ void string_array_result_free(StringArrayResult result) {
 StringArray *string_array_from(StringArray *arr) {
     StringArray *_arr = string_array_empty();
 
-    for (int i = 0; i < arr->count; i++) {
+    int i;
+    for (i = 0; i < arr->count; i++) {
         string_array_add(arr->items[i], _arr);
     }
 
@@ -461,7 +463,8 @@ StringArray *string_array_from(StringArray *arr) {
 StringArray *string_array_new(String *strs, int count) {
     StringArray *_arr = string_array_empty();
     
-    for (int i = 0; i < count; i++) {
+    int i;
+    for (i = 0; i < count; i++) {
         string_array_add(strs[i], _arr);
     }
 
@@ -488,7 +491,9 @@ void string_array_add(String str, StringArray *arr) {
 
 void string_array_free(StringArray *arr) {
     if (!arr) return;
-    for (int i = 0; i < arr->count; i++) {
+
+    int i;
+    for (i = 0; i < arr->count; i++) {
         free(arr->items[i]._value);
     }
 
@@ -555,12 +560,13 @@ String string_empty() {
 }
 
 String string_new(const char *str) {
-    String _str = {0};
+    String _str;
 
     int len = _len((char *)str);
     _str._value = malloc(len + 1);
 
-    for (int i = 0; i < len; i++) {
+    int i;
+    for (i = 0; i < len; i++) {
         _str._value[i] = str[i];
     }
     _str._value[len] = '\0';
@@ -576,7 +582,8 @@ String string_from(String str) {
 String string_repeat(char c, int n) {
     String base_str = string_empty();
     
-    for (int i = 0; i < n; i++) {
+    int i;
+    for (i = 0; i < n; i++) {
         String _str = string_concat_char(base_str, c);
         string_free(base_str);
         base_str = string_from(_str);

@@ -521,11 +521,12 @@ void test_string_array_from() {
 void test_string_array_create_from_loop() {
     StringArray *arr = string_array_empty();
     
-    for (int i = 0; i < 10; i++) {
+    int i;
+    for (i = 0; i < 10; i++) {
         string_array_add(string_new("String"), arr);
     }
 
-    for (int i = 0; i < 10; i++) {
+    for (i = 0; i < 10; i++) {
         assert_string_eq(arr->items[i]._value, "String");
     }
 
