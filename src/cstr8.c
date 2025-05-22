@@ -184,7 +184,7 @@ int string_char_is_punctuation(char c) {
            (c >= 123 && c <= 126);    /* {|}~ */
 }
 
-int string_char_is_letter_or_digit(char c) {
+int string_char_is_alphanumeric(char c) {
     return string_char_is_letter(c) || string_char_is_digit(c);
 }
 
@@ -326,6 +326,16 @@ int string_starts_with_string(String a, String b) {
         char c = string_iterator_next(&iter);
 
         if (string_char_at(iter.index - 1, a) != c) {
+            return 0;
+        }
+    }
+
+    return 1;
+
+    for (int i = 0; i < string_len(b); i++) {
+        char c = string_char_at(i, b);
+
+        if (string_char_at(i, a) != c) {
             return 0;
         }
     }

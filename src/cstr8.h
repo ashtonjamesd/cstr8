@@ -91,6 +91,86 @@ typedef struct {
 } StringArrayResult;
 
 
+/** ========== Char Predicates ========== **/
+/**
+ * @brief Returns true if the given character is a lowercase letter
+ */
+extern int string_char_is_lower_letter(char c);
+
+
+/**
+ * @brief Returns true if the given character is an uppercase letter
+ */
+extern int string_char_is_upper_letter(char c);
+
+
+/**
+ * @brief Returns true if the given character is a letter
+ */
+extern int string_char_is_letter(char c);
+
+
+/**
+ * @brief Returns true if the given character is a digit
+ */
+extern int string_char_is_digit(char c);
+
+
+/**
+ * @brief Returns true if the given character is a whitespace character
+ * 
+ * whitespace characters:
+ *   - ` `, `\t`, `\r`, `\n`, `\v`, `\f`
+ * 
+ */
+extern int string_char_is_space(char c);
+
+
+/**
+ * @brief Returns true if the given character is a valid hexadecimal character
+ */
+extern int string_char_is_hex(char c);
+
+
+/**
+ * @brief Returns true if the given character is a valid binary character
+ */
+extern int string_char_is_bin(char c);
+
+
+/**
+ * @brief Returns true if the given character is a control character
+ */
+extern int string_char_is_control(char c);
+
+
+/**
+ * @brief Returns true if the given character is a punctuation character
+ */
+extern int string_char_is_punctuation(char c);
+
+
+/**
+ * @brief Returns true if the given character is a letter or digit character
+ */
+extern int string_char_is_alphanumeric(char c);
+
+
+/**
+ * @brief Returns true if the given character is a vowel
+ */
+extern int string_char_is_vowel(char c);
+
+
+/**
+ * @brief Returns true if the given character is a consonant
+ */
+extern int string_char_is_consonant(char c);
+
+
+
+/** ========== String Utilities ========== **/
+
 /**
  * @brief Creates a new cstr8 string instance from a null-terminated C string.
  * 
@@ -114,13 +194,6 @@ extern String string_empty();
  */
 extern String string_from(String s);
 
-/**
- * @brief Creates a new cstr8 string filled with 'c', 'n' times
- * 
- * The returned string must be freed with string_free().
- */
-extern String string_repeat(char c, int n);
-
 
 /**
  * @brief Frees a cstr8 string instance.
@@ -129,9 +202,17 @@ extern void string_free(String s);
 
 
 /**
- * @brief Frees a StringArray instance.
+ * @brief Frees the result of a string operation.
  */
-extern void string_array_result_free(StringArrayResult result);
+extern void string_result_free(StringResult result);
+
+
+/**
+ * @brief Creates a new cstr8 string filled with 'c', 'n' times
+ * 
+ * The returned string must be freed with string_free().
+ */
+extern String string_repeat(char c, int n);
 
 
 /**
@@ -153,59 +234,6 @@ extern String string_concat_char(String s, char c);
  * @brief Returns a new string instance that is the concatenation of 's1' and 's2'.
  */
 extern String string_concat_string(String s1, String s2);
-
-
-/**
- * @brief Splits the given string into substrings by the specified delimiter character.
- * 
- * Returns a StringResult which must be checked for errors.
- * If successful, the result's items must be freed with string_array_free().
- */
-extern StringArrayResult string_split(char c, String s);
-
-
-/**
- * @brief Frees the result of a string operation (both String and StringArray, if present).
- */
-extern void string_result_free(StringResult result);
-
-
-/**
- * @brief Creates a new StringArray from an array of Strings.
- * 
- * The returned array must be freed with string_array_free().
- */
-extern StringArray *string_array_new(String *strs, int count);
-
-
-/**
- * @brief Creates an empty StringArray.
- * 
- * The returned array must be freed with string_array_free().
- */
-extern StringArray *string_array_empty();
-
-
-/**
- * @brief Creates a new StringArray by copying an existing one.
- * 
- * The returned array must be freed with string_array_free().
- */
-extern StringArray *string_array_from(StringArray *arr);
-
-
-/**
- * @brief Frees a StringArray and all of its contained Strings.
- */
-extern void string_array_free(StringArray *arr);
-
-
-/**
- * @brief Adds a String to a StringArray.
- * 
- * The array will expand as needed.
- */
-extern void string_array_add(String s, StringArray *arr);
 
 
 /**
@@ -280,8 +308,6 @@ extern int string_contains(char c, String s);
 
 /**
  * @brief Returns the character at the specified index in the string.
- * 
- * No bounds checking is performed.
  */
 extern char string_char_at(int i, String s);
 
@@ -333,82 +359,6 @@ extern String string_reverse(String s);
 extern String string_to_upper(String s);
 
 /**
- * @brief Returns true if the given character is a lowercase letter
- */
-extern int string_char_is_lower_letter(char c);
-
-
-/**
- * @brief Returns true if the given character is an uppercase letter
- */
-extern int string_char_is_upper_letter(char c);
-
-
-/**
- * @brief Returns true if the given character is a letter
- */
-extern int string_char_is_letter(char c);
-
-
-/**
- * @brief Returns true if the given character is a digit
- */
-extern int string_char_is_digit(char c);
-
-
-/**
- * @brief Returns true if the given character is a whitespace character
- * 
- * whitespace characters:
- *   - ` `, `\t`, `\r`, `\n`, `\v`, `\f`
- * 
- */
-extern int string_char_is_space(char c);
-
-
-/**
- * @brief Returns true if the given character is a valid hexadecimal character
- */
-extern int string_char_is_hex(char c);
-
-
-/**
- * @brief Returns true if the given character is a valid binary character
- */
-extern int string_char_is_bin(char c);
-
-
-/**
- * @brief Returns true if the given character is a control character
- */
-extern int string_char_is_control(char c);
-
-
-/**
- * @brief Returns true if the given character is a punctuation character
- */
-extern int string_char_is_punctuation(char c);
-
-
-/**
- * @brief Returns true if the given character is a letter or digit character
- */
-extern int string_char_is_letter_or_digit(char c);
-
-
-/**
- * @brief Returns true if the given character is a vowel
- */
-extern int string_char_is_vowel(char c);
-
-
-/**
- * @brief Returns true if the given character is a consonant
- */
-extern int string_char_is_consonant(char c);
-
-
-/**
  * @brief Returns a new instance of a string with all instances of 'replace' with 'with'.
  * 
  * The returned string must be freed with string_free().
@@ -449,6 +399,65 @@ extern int string_char_count(char c, String s);
 
 
 /**
+ * @brief Splits the given string into substrings by the specified delimiter character.
+ * 
+ * Returns a StringResult which must be checked for errors.
+ * If successful, the result's items must be freed with string_array_free().
+ */
+extern StringArrayResult string_split(char c, String s);
+
+
+
+/** ========== String Array Utilities ========== **/
+
+/**
+ * @brief Creates a new StringArray from an array of Strings.
+ * 
+ * The returned array must be freed with string_array_free().
+ */
+extern StringArray *string_array_new(String *strs, int count);
+
+
+/**
+ * @brief Creates an empty StringArray.
+ * 
+ * The returned array must be freed with string_array_free().
+ */
+extern StringArray *string_array_empty();
+
+
+/**
+ * @brief Creates a new StringArray by copying an existing one.
+ * 
+ * The returned array must be freed with string_array_free().
+ */
+extern StringArray *string_array_from(StringArray *arr);
+
+
+/**
+ * @brief Frees a StringArray and all of its contained Strings.
+ */
+extern void string_array_free(StringArray *arr);
+
+
+/**
+ * @brief Frees a instance of a StringArrayResult.
+ */
+extern void string_array_result_free(StringArrayResult result);
+
+
+/**
+ * @brief Adds a String to a StringArray.
+ * 
+ * The array will expand as needed.
+ */
+extern void string_array_add(String s, StringArray *arr);
+
+
+
+/** ========== String Iterators ========== **/
+
+/**
  * @brief Returns a new instance of a StringIterator
  */
 extern StringIterator string_iterator_new(String *s);
@@ -464,5 +473,6 @@ extern int string_iterator_has_next(StringIterator *iter);
  * @brief Returns the next character and advances the iterator.
  */
 extern char string_iterator_next(StringIterator *iter);
+
 
 #endif
