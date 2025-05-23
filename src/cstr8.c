@@ -9,7 +9,7 @@ static char *err_str(StringErrCode code) {
         case LENGTH_OF_SUBSTRING_LESS_THAN_0:
             return "the length of the string_substring is less than zero";
         default:
-            return "umm something went wrong";
+            return "unknown error code";
     }
 }
 
@@ -90,7 +90,7 @@ String string_to_lower(String str) {
     while (string_iterator_has_next(&iter)) {
         char c = string_iterator_next(&iter);
         
-        if (string_char_is_upper_letter(c)) {
+        if (char_is_upper_letter(c)) {
             _set_char_at(i++, c + ('a' - 'A'), _str);
         } else {
             _set_char_at(i++, c, _str);
@@ -127,7 +127,7 @@ String string_to_upper(String str) {
     while (string_iterator_has_next(&iter)) {
         char c = string_iterator_next(&iter);
 
-        if (string_char_is_lower_letter(c)) {
+        if (char_is_lower_letter(c)) {
             _set_char_at(iter.index - 1, c + ('A' - 'a'), _str);
         } else {
             _set_char_at(iter.index - 1, c, _str);
@@ -137,23 +137,23 @@ String string_to_upper(String str) {
     return _str;
 }
 
-int string_char_is_lower_letter(char c) {
+int char_is_lower_letter(char c) {
     return ('a' <= c && c <= 'z');
 }
 
-int string_char_is_upper_letter(char c) {
+int char_is_upper_letter(char c) {
     return ('A' <= c && c <= 'Z');
 }
 
-int string_char_is_letter(char c) {
-    return string_char_is_lower_letter(c) || string_char_is_upper_letter(c);
+int char_is_letter(char c) {
+    return char_is_lower_letter(c) || char_is_upper_letter(c);
 }
 
-int string_char_is_digit(char c) {
+int char_is_digit(char c) {
     return ('0' <= c && c <= '9');
 }
 
-int string_char_is_space(char c) {
+int char_is_space(char c) {
     return c == ' '
         || c == '\t'
         || c == '\r'
@@ -162,33 +162,33 @@ int string_char_is_space(char c) {
         || c == '\f';
 }
 
-int string_char_is_hex(char c) {
+int char_is_hex(char c) {
     return (c >= '0' && c <= '9') ||
            (c >= 'a' && c <= 'f') ||
            (c >= 'A' && c <= 'F');
 }
 
 
-int string_char_is_bin(char c) {
+int char_is_bin(char c) {
     return c == '1' || c == '0';
 }
 
-int string_char_is_control(char c) {
+int char_is_control(char c) {
     return (c >= 0 && c <= 31) || c == 127;
 }
 
-int string_char_is_punctuation(char c) {
+int char_is_punctuation(char c) {
     return (c >= 33  && c <=  47)  || /* !"#$%&'()*+,-./ */
            (c >= 58  && c <=  64)  || /* :;<=>?@ */
            (c >= 91  && c <=  96)  || /* [\]^_` */
            (c >= 123 && c <= 126);    /* {|}~ */
 }
 
-int string_char_is_alphanumeric(char c) {
-    return string_char_is_letter(c) || string_char_is_digit(c);
+int char_is_alphanumeric(char c) {
+    return char_is_letter(c) || char_is_digit(c);
 }
 
-int string_char_is_vowel(char c) {
+int char_is_vowel(char c) {
     c = string_char_to_lower(c);
     
     return c == 'a'
@@ -198,8 +198,8 @@ int string_char_is_vowel(char c) {
         || c == 'u';
 }
 
-int string_char_is_consonant(char c) {
-    return string_char_is_letter(c) && !string_char_is_vowel(c);
+int char_is_consonant(char c) {
+    return char_is_letter(c) && !char_is_vowel(c);
 }
 
 String string_replace_char(char replace, char with, String str) {
@@ -220,7 +220,7 @@ String string_trim(String s) {
     int start = 0;
     int end = len - 1;
 
-    while (start <= end && string_char_is_space(s._value[start])) {
+    while (start <= end && char_is_space(s._value[start])) {
         start++;
     }
 
@@ -228,7 +228,7 @@ String string_trim(String s) {
         return string_empty();
     }
 
-    while (end >= start && string_char_is_space(s._value[end])) {
+    while (end >= start && char_is_space(s._value[end])) {
         end--;
     }
 
@@ -246,7 +246,7 @@ String string_trim_left(String s) {
     int len = string_len(s);
     int start = 0;
 
-    while (start < len && string_char_is_space(s._value[start])) {
+    while (start < len && char_is_space(s._value[start])) {
         start++;
     }
 
@@ -269,7 +269,7 @@ String string_trim_right(String s) {
     int len = string_len(s);
     int end = len - 1;
 
-    while (end >= 0 && string_char_is_space(s._value[end])) {
+    while (end >= 0 && char_is_space(s._value[end])) {
         end--;
     }
 
@@ -315,11 +315,18 @@ int string_char_count(char c, String s) {
 }
 
 int string_starts_with_char(char c, String str) {
-    if (string_len(str) == 0) return 0;
+    if (string_len(str) == 0) {
+        return 0;
+    }
+
     return string_first(str) == c;
 }
 
 int string_starts_with_string(String a, String b) {
+    if (string_len(b) > string_len(a)) {
+        return 0;
+    }
+
     StringIterator iter = string_iterator_new(&b);
 
     while (string_iterator_has_next(&iter)) {
@@ -331,20 +338,13 @@ int string_starts_with_string(String a, String b) {
     }
 
     return 1;
-
-    for (int i = 0; i < string_len(b); i++) {
-        char c = string_char_at(i, b);
-
-        if (string_char_at(i, a) != c) {
-            return 0;
-        }
-    }
-
-    return 1;
 }
 
 int string_ends_with(char c, String str) {
-    if (string_len(str) == 0) return 0;
+    if (string_len(str) == 0) {
+        return 0;
+    }
+
     return string_last(str) == c;
 }
 

@@ -52,18 +52,18 @@ string_free(s);
 
 ### Char Predicate Utilities
 ```
-int string_char_is_lower_letter(char c);
-int string_char_is_upper_letter(char c);
-int string_char_is_letter(char c);
-int string_char_is_digit(char c);
-int string_char_is_space(char c);
-int string_char_is_hex(char c);
-int string_char_is_bin(char c);
-int string_char_is_control(char c);
-int string_char_is_punctuation(char c);
-int string_char_is_alphanumeric(char c);
-int string_char_is_vowel(char c);
-int string_char_is_consonant(char c);
+int char_is_lower_letter(char c);
+int char_is_upper_letter(char c);
+int char_is_letter(char c);
+int char_is_digit(char c);
+int char_is_space(char c);
+int char_is_hex(char c);
+int char_is_bin(char c);
+int char_is_control(char c);
+int char_is_punctuation(char c);
+int char_is_alphanumeric(char c);
+int char_is_vowel(char c);
+int char_is_consonant(char c);
 ```
 
 

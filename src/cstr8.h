@@ -95,25 +95,25 @@ typedef struct {
 /**
  * @brief Returns true if the given character is a lowercase letter
  */
-extern int string_char_is_lower_letter(char c);
+extern int char_is_lower_letter(char c);
 
 
 /**
  * @brief Returns true if the given character is an uppercase letter
  */
-extern int string_char_is_upper_letter(char c);
+extern int char_is_upper_letter(char c);
 
 
 /**
  * @brief Returns true if the given character is a letter
  */
-extern int string_char_is_letter(char c);
+extern int char_is_letter(char c);
 
 
 /**
  * @brief Returns true if the given character is a digit
  */
-extern int string_char_is_digit(char c);
+extern int char_is_digit(char c);
 
 
 /**
@@ -123,49 +123,49 @@ extern int string_char_is_digit(char c);
  *   - ` `, `\t`, `\r`, `\n`, `\v`, `\f`
  * 
  */
-extern int string_char_is_space(char c);
+extern int char_is_space(char c);
 
 
 /**
  * @brief Returns true if the given character is a valid hexadecimal character
  */
-extern int string_char_is_hex(char c);
+extern int char_is_hex(char c);
 
 
 /**
  * @brief Returns true if the given character is a valid binary character
  */
-extern int string_char_is_bin(char c);
+extern int char_is_bin(char c);
 
 
 /**
  * @brief Returns true if the given character is a control character
  */
-extern int string_char_is_control(char c);
+extern int char_is_control(char c);
 
 
 /**
  * @brief Returns true if the given character is a punctuation character
  */
-extern int string_char_is_punctuation(char c);
+extern int char_is_punctuation(char c);
 
 
 /**
  * @brief Returns true if the given character is a letter or digit character
  */
-extern int string_char_is_alphanumeric(char c);
+extern int char_is_alphanumeric(char c);
 
 
 /**
  * @brief Returns true if the given character is a vowel
  */
-extern int string_char_is_vowel(char c);
+extern int char_is_vowel(char c);
 
 
 /**
  * @brief Returns true if the given character is a consonant
  */
-extern int string_char_is_consonant(char c);
+extern int char_is_consonant(char c);
 
 
 

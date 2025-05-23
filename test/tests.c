@@ -471,6 +471,16 @@ void test_string_starts_with_string() {
     string_free(b);
 }
 
+void test_string_starts_with_string_long() {
+    String a = string_new("Hello, World!");
+    String b = string_new("aaaaaaaaaaaaaaaaaaa");
+
+    assert_false(string_starts_with_string(a, b));
+
+    string_free(a);
+    string_free(b);
+}
+
 void test_string_array() {
     StringArray *arr = string_array_empty();
 
@@ -580,6 +590,7 @@ int main(void) {
     run_test(test_string_trim_right_empty);
     run_test(test_string_trim);
     run_test(test_string_starts_with_string);
+    run_test(test_string_starts_with_string_long);
 
     run_test(test_string_array);
     run_test(test_string_array_from);
