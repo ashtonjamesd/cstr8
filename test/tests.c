@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "../src/cstr8.h"
+#include "../src/strizzle.h"
 #include "test.c"
 
 void test_string_new() {

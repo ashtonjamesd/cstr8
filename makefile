@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Isrc -Itest -fsanitize=address -g
-OBJS = test/tests.c src/cstr8.c
+OBJS = test/tests.c src/strizzle.c
 EXEC = build/cstr8
 
 all:

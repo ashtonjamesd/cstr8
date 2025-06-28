@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdio.h>
 
 int tests_failed = 0;
 int tests_ran = 0;
