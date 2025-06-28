@@ -1,6 +1,6 @@
-# Cstr8
+# Strizzle
 
-Cstr8 (see-straight) is (another) modern string utility library, designed for safety and readability.
+Strizzle is (another) modern string utility library, designed for safety and readability.
 
 <br/>
 
@@ -9,7 +9,7 @@ Cstr8 (see-straight) is (another) modern string utility library, designed for sa
 ### Clone the repository
 
 ```
-git clone https://github.com/ashtonjamesd/cstr8.git
+git clone https://github.com/ashtonjamesd/strizzle.git
 ```
 
 <br/>
@@ -19,7 +19,7 @@ git clone https://github.com/ashtonjamesd/cstr8.git
 ### Include the library
 
 ```c
-#include "cstr8.h"
+#include "strizzle.h"
 ```
 
 ### Example usage
@@ -128,7 +128,7 @@ String string_trim(String s);
 int string_index_of(char c, String s);
 StringArrayResult string_split(char c, String s);
 
-// see src/cstr8.h for a full list
+// see src/strizzle.h for a full list
 ```
 
 
